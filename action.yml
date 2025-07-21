@@ -28,7 +28,7 @@ runs:
         sudo apt-get install --allow-unauthenticated -qq -y libprotobuf32t64 python3-protobuf libnet1
 
         echo "INFO: Installing CRIU manually..."
-        curl -sLO http://cz.archive.ubuntu.com/ubuntu/pool/universe/c/criu/criu_3.16.1-2_amd64.deb && sudo dpkg -i criu_3.16.1-2_amd64.deb
+        curl -sLO http://archive.ubuntu.com/ubuntu/pool/universe/c/criu/criu_3.16.1-2_amd64.deb && sudo dpkg -i criu_3.16.1-2_amd64.deb
 
         echo "INFO: Installing Podman..."
         sudo apt-get -qq -y install --allow-unauthenticated podman || {
