@@ -1,16 +1,17 @@
-name: 'Install Podman 5.x'
-description: 'Installs/updates Podman to v5 from the Kubic repository on Ubuntu.'
+name: "Install Podman 5.x"
+description: "Installs/updates Podman to v5 from the Kubic repository on Ubuntu."
 
 inputs:
   ubuntu-version:
-    description: 'The Ubuntu version codename for the Kubic repository.'
+    description: "The Ubuntu version codename for the Kubic repository."
     required: false
-    default: '23.10'
+    default: "23.10"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Update podman to 5.x
+      if: runner.os == 'Linux'
       shell: bash
       run: |
         ubuntu_version='${{ inputs.ubuntu-version }}'
@@ -37,6 +38,27 @@ runs:
           sudo apt-get --allow-insecure-repositories update -qq
           sudo apt-get --allow-unauthenticated -y install podman
         }
-        
+
         echo "INFO: Podman installation complete."
         podman version
+
+    - name: Install Podman on Windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        echo "Installing Podman..."
+        curl --output podman-setup.exe -L https://github.com/containers/podman/releases/download/v5.3.2/podman-5.3.2-setup.exe
+        # Start the installer and wait for it to complete
+        Start-Process -FilePath .\podman-setup.exe -ArgumentList "/install", "/passive", "/norestart", "/log podman-logs.txt" -Wait
+        # Check the logs for debugging purposes
+        Get-Content podman-logs.txt
+
+    - name: Initialize Podman Machine on Windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        echo "Adding Podman to PATH for this session..."
+        $env:PATH += ";C:\Program Files\RedHat\Podman"
+        podman --version
+        echo "Initializing Podman machine..."
+        podman machine init --now
